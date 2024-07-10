@@ -32,12 +32,12 @@ class CMakeBuild(build_ext):
 
 
 setup(
-    name='pcl_compression',
+    name='pcl_compression',#the package name you use to install 
     version='0.0.1',
     author='Zoratt',
     author_email='1720049199@qq.com',
     description='A pcl octree compression algorithm pybind example project',
-    ext_modules=[CMakeExtension('pcl_compression')],
+    ext_modules=[CMakeExtension('_pcl_compression')],#the module name you use to import
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
     packages=['pcl_compression'],

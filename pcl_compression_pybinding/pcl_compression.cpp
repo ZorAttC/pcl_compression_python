@@ -49,9 +49,8 @@ py::bytes encode(py::array_t<float> input, double pointResolution, double octree
         sourceCloud.push_back(point);
     }
     pcl::io::compression_Profiles_e compressionProfile = pcl::io::MANUAL_CONFIGURATION;
-    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB> *PointCloudEncoder;
-    PointCloudEncoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB>(compressionProfile, false, pointResolution, octreeResolution,
-                                                                                   false, 100, false, 8); // 输入参数
+    auto PointCloudEncoder = std::make_shared<pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB>>(
+        compressionProfile, false, pointResolution, octreeResolution, false, 100, false, 8); // 使用智能指针
     std::stringstream compressedData;
     PointCloudEncoder->encodePointCloud(sourceCloud.makeShared(), compressedData);
     std::string compressedData_str = compressedData.str();
@@ -63,12 +62,11 @@ py::bytes encode(py::array_t<float> input, double pointResolution, double octree
 py::array_t<float> decode(py::bytes input, double pointResolution, double octreeResolution)
 {
     pcl::io::compression_Profiles_e compressionProfile = pcl::io::MANUAL_CONFIGURATION;
-    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB> *PointCloudEncoder;
-    PointCloudEncoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB>(compressionProfile, false, pointResolution, octreeResolution,
-                                                                                   false, 100, false, 8); // 输入参数
+    auto PointCloudEncoder = std::make_shared<pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB>>(
+        compressionProfile, false, pointResolution, octreeResolution, false, 100, false, 8); // 使用智能指针
     std::stringstream compressedData;
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudOut(new pcl::PointCloud<pcl::PointXYZRGB>());
-    //write py::bytes to compressedData
+    // write py::bytes to compressedData
     std::string compressedData_str = input;
     compressedData << compressedData_str;
     PointCloudEncoder->decodePointCloud(compressedData, cloudOut);
@@ -87,5 +85,5 @@ PYBIND11_MODULE(_pcl_compression, m)
 {
     m.doc() = "pybind11 pcl octree pointcloud compression plugin"; // optional module docstring
     m.def("encode", &encode, "A function which encode the pointcloud and ouput the binary data.");
-     m.def("decode", &decode, "A function which decode the binary and ouput the numpy array.");
+    m.def("decode", &decode, "A function which decode the binary and ouput the numpy array.");
 }

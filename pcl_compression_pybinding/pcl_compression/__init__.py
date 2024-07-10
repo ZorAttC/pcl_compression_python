@@ -1,1 +1,1 @@
-from ..pcl_compression import encode,decode
+from _pcl_compression import encode,decode
